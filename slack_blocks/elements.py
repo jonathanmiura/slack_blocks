@@ -1,42 +1,4 @@
-def plain_text(text:str,emoji:bool=True):
-    """ Receives text (str) and returns a plain_text object (dict) """
-    if text is None:
-        return None
-
-    if type(text)==str:
-        return {
-            "type":"plain_text",
-            "text":text,
-            "emoji":emoji
-        }
-        
-    if type(text)!=dict:
-        raise Exception("Invalid input text")
-
-    if text['type']=="plain_text":
-        return text
-    else:
-        raise Exception("Input text had wrong type")
-    
-
-def mrkdwn(text:str):
-    """ Receives text (str) and returns a mrkdwn object (dict)"""
-    if text is None:
-        return None
-    
-    if type(text)==str:
-        return {
-            "type":"mrkdwn",
-            "text":text
-        }
-    if type(text)!=dict:
-        raise Exception("Invalid input text")
-
-    if text['type']=="mrkdwn":
-        return text
-    else:
-        raise Exception("Input text had wrong type")
-
+from composition_objects import *
 
 def button(text:str, action_id:str=None, url:str=None, value:str=None, style:str=None, confirm:dict=None, accessibility_label:str=None):
     ELEMENT = {
@@ -44,29 +6,17 @@ def button(text:str, action_id:str=None, url:str=None, value:str=None, style:str
         "text": plain_text(text=text)
     }
 
-    optional_args = {"action_id":action_id, "url":url, "value":value, "style":style, "confirm":confirm, "accessibility_label":accessibility_label}
+    if style in ["red","danger"]:
+        ELEMENT['style'] = "danger"
+    elif style in ['green', 'primary']:
+        ELEMENT['style'] = "primary"
+
+    optional_args = {"action_id":action_id, "url":url, "value":value, "confirm":confirm, "accessibility_label":accessibility_label}
     for KEY in optional_args.keys():
         if optional_args[KEY] is not None:
             ELEMENT[KEY] = optional_args[KEY]
 
     return ELEMENT
-
-def option(text:str, value:str=None, text_type = "mrkdwn"):
-    OPTION = {
-        "text": mrkdwn(text) if text_type=="mrkdwn" else plain_text(text)
-    }
-
-    if value is not None:
-        OPTION['value']=value
-
-    return OPTION
-
-def option_group(label:str, options:list, text_type:str = "plain_text"):
-    OPTION_GROUP = {
-            "label": plain_text(label),
-            "options": [option(OPTION,text_type=text_type) for OPTION in options]
-        }
-    return OPTION_GROUP
 
 def checkboxes(options:list, action_id:str = None ,initial_options:list=[], confirm:dict=None, focus_on_load:bool=False, text_type = "mrkdwn"):
     ELEMENT = {
@@ -262,74 +212,145 @@ def number(is_decimal_allowed:bool=False, action_id:str=None, initial_value:str=
 
     return ELEMENT
 
-## TO Do
-
-def overflow():
+def overflow(options:list, confirm:dict=None, action_id:str=None):
     ELEMENT = {
-        "type":"overflow"
+        "type":"overflow",
+        "options": [option(OPTION) for OPTION in options]
     }
+    optional_args = {"action_id":action_id, "confirm":confirm}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def plain_text_input():
+def plain_text_input(action_id:str=None, initial_value:str=None, multiline:bool=None, min_length:int=None, max_length:int=None, dispatch_action_config:dict=None, focus_on_load:bool=None, placeholder:str=None):
+ 
     ELEMENT = {
         "type":"plain_text_input"
     }
 
+    optional_args = {"action_id":action_id,"initial_value":initial_value,"multiline":multiline,"min_length":min_length,"max_length":max_length,"dispatch_action_config":dispatch_action_config,"focus_on_load":focus_on_load,"placeholder":plain_text(placeholder)}
+    
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def radio_button():
+def radio_button(options:list, action_id:str=None, initial_option:str=None, confirm:dict=None, focus_on_load:bool=None):
     ELEMENT = {
-        "type":"radio_buttons"
+        "type":"radio_buttons",
+        "options":[option(OPTION) for OPTION in options]
     }
+
+    optional_args = {"action_id": action_id, "initial_option": initial_option, "confirm": confirm, "focus_on_load": focus_on_load}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def static_select():
+def static_select(options:list=None, action_id:str=None, option_groups:list=None, initial_option:str=None, confirm:dict=None, focus_on_load:bool=None):
     ELEMENT = {
-        "type":"static_select"
+        "type":"static_select",
     }
+
+    if options is not None:
+        ELEMENT['options'] = [option(OPTION) for OPTION in options]
+    elif option_groups is not None:
+        ELEMENT['option_groups'] = option_groups 
+    else:
+        raise Exception("Either options or option_groups must be provided!")
+    optional_args = {"action_id": action_id, "initial_option": option(initial_option), "confirm": confirm, "focus_on_load": focus_on_load}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def external_select():
+def external_select(action_id:str=None, initial_option:str=None, min_query_length:int=None, confirm:dict=None, focus_on_load:bool=None, placeholder:str=None):
     ELEMENT = {
-        "type":"static_select"
+        "type":"static_select",
     }
+    
+    optional_args = {"action_id": action_id, "initial_option": option(initial_option), "min_query_length": min_query_length, "confirm": confirm, "focus_on_load": focus_on_load, "placeholder": plain_text(placeholder)}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
 
-def users_select():
+def users_select(action_id:str=None, initial_user:str=None, confirm:dict=None, focus_on_load:bool=None, placeholder:str=None):
     ELEMENT = {
         "type":"users_select"
     }
+    optional_args = {"action_id": action_id, "initial_user": initial_user, "confirm": confirm, "focus_on_load": focus_on_load, "placeholder": plain_text(placeholder)}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def conversations_select():
+def conversations_select(action_id:str=None, initial_conversation:str=None, default_to_current_conversation:bool=None, confirm:dict=None,
+                          response_url_enabled:bool=None, filter:object=None, focus_on_load:bool=None, placeholder:str=None):
     ELEMENT = {
         "type":"conversations_select"
     }
+    optional_args = {"action_id": action_id, "initial_conversation": initial_conversation, "default_to_current_conversation": default_to_current_conversation,
+                     "confirm": confirm, "response_url_enabled": response_url_enabled, "filter": filter, "focus_on_load": focus_on_load, "placeholder": plain_text(placeholder)}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def channels_select():
+def channels_select(action_id:str=None, initial_channel:str=None, confirm:dict=None, response_url_enabled:bool=None, focus_on_load:bool=None, placeholder:str=None):
     ELEMENT = {
         "type":"channels_select"
     }
+    optional_args = {"action_id": action_id, "initial_channel": initial_channel, "confirm": confirm, "response_url_enabled": response_url_enabled,
+                     "focus_on_load": focus_on_load, "placeholder": plain_text(placeholder)}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def timepicker():
+def timepicker(action_id:str=None, initial_time:str=None, confirm:dict=None, focus_on_load:bool=None, placeholder:str=None, timezone:str=None):
     ELEMENT = {
         "type":"timepicker"
     }
+
+    optional_args = {"action_id": action_id, "initial_time": initial_time, "confirm": confirm, "focus_on_load": focus_on_load, 
+                     "placeholder": plain_text(placeholder), "timezone": timezone}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
 
-def url_text_input():
+def url_text_input(action_id:str=None, initial_value:str=None, dispatch_action_configuration:str=None, focus_on_load:bool=None, placeholder:str=None):
     ELEMENT = {
         "type":"url_text_input"
     }
+    optional_args = {"action_id": action_id, "initial_value": initial_value, "dispatch_action_configuration": dispatch_action_configuration,
+                     "focus_on_load": focus_on_load, "placeholder": plain_text(placeholder)}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
     return ELEMENT
 
-def workflow_button():
+def workflow_button(text:str, workflow:dict, action_id:str, style:str=None, accessibility_label:str=None):
     ELEMENT = {
-        "type":"workflow_button"
+        "type":"workflow_button",
+        "text":plain_text(text),
+        "workflow": workflow,
+        "action_id": action_id
     }
+
+    if style in ["red","danger"]:
+        ELEMENT['style'] = "danger"
+    elif style in ['green', 'primary']:
+        ELEMENT['style'] = "primary"
+
+    optional_args = {"action_id": action_id, "accessibility_label":accessibility_label}
+    for KEY in optional_args.keys():
+        if optional_args[KEY] is not None:
+            ELEMENT[KEY] = optional_args[KEY]
+
     return ELEMENT
 

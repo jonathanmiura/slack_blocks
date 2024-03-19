@@ -1,10 +1,12 @@
-from functions import *
+from composition_objects import *
+from elements import *
 
 class slack_blocks:
     def __init__(self, surface:str="message"):
         self.message = []
         self.surface = surface
 
+    @property
     def to_string(self):
         """Transform message object into string ready for Slack's block kit builder https://app.slack.com/block-kit-builder/"""
         BLOCKS = {
@@ -162,51 +164,51 @@ class slack_blocks:
         return self
     
 
-# button_input = button("Click Here!", url = "https://www.google.com", style="danger")
+button_input = button("Click Here!", url = "https://www.google.com", style="danger")
 
-# checkbox_input = checkboxes(['charmander','bulbasaur','squirtle'],'pokemon_pick', initial_options=['squirtle'])
+checkbox_input = checkboxes(['charmander','bulbasaur','squirtle'],'pokemon_pick', initial_options=['squirtle'])
 
-# date_input = datepicker(action_id="date_pick",placeholder=None)
+date_input = datepicker(action_id="date_pick",placeholder=None)
 
-# email_input = email('email_gather')
+email_input = email('email_gather')
 
-# file_input = file(action_id="file_input", filetypes=["jpeg","png"], max_files=4)
+file_input = file(action_id="file_input", filetypes=["jpeg","png"], max_files=4)
 
-# image_element = image(alt_text="example", image_url="https://api.slack.com/img/blocks/bkb_template_images/Streamline-Beach.png")
+image_element = image(alt_text="example", image_url="https://api.slack.com/img/blocks/bkb_template_images/Streamline-Beach.png")
 
-# number_input = number(is_decimal_allowed=True, action_id="number_input")
+number_input = number(is_decimal_allowed=True, action_id="number_input")
 
-# OPTION_GROUPS = [
-#     option_group(label="Roupas",options=["calças","camisetas","meias","cuecas"]),
-#     option_group(label="Higiene",options=["escova","pasta","shampoo","sabonete","desodorante"]),
-#     option_group(label="Documentos",options=["RG","passaporte","CNH"]),
-# ]
+OPTION_GROUPS = [
+    option_group(label="Roupas",options=["calças","camisetas","meias","cuecas"]),
+    option_group(label="Higiene",options=["escova","pasta","shampoo","sabonete","desodorante"]),
+    option_group(label="Documentos",options=["RG","passaporte","CNH"]),
+]
 
-# multi_static_select_input = multi_static_select(option_groups=OPTION_GROUPS, max_select_items=2)
-# multi_static_select_input = multi_static_select(options=["calças","camisetas","meias","cuecas"])
+multi_static_select_input = multi_static_select(options=["calças","camisetas","meias","cuecas"])
 
-# multi_users_select_input = multi_users_select( action_id="users_select")
+multi_users_select_input = multi_users_select( action_id="users_select")
 
-# multi_conversations_select_input = multi_conversations_select( action_id="conversation_select", default_to_current_conversation=True)
-# multi_channels_select_input = multi_channels_select( action_id="channel_select")
+multi_conversations_select_input = multi_conversations_select( action_id="conversation_select", default_to_current_conversation=True)
+multi_channels_select_input = multi_channels_select( action_id="channel_select")
 
 
-# S = (
-#     slack_blocks()
-#     .header("Hello, World!")
-#     .divider()
-#     # .section(text="Hello there, stranger", accessory=button_input)
-#     # .section(text="Select pokemon", accessory=checkbox_input)
-#     # .section(text="Date pick",accessory=date_input)
-#     # .input(label="Email",element=email_input)
-#     # .input(label="File",element=file_input, hint="Your selfie here")
-#     # .input(label="height",element=number_input)
-#     # .section(text="Travel Checklist",accessory=multi_static_select_input)
-#     .input(label='Pick users',element=multi_users_select_input)
-#     .input(label='Pick conversation',element=multi_conversations_select_input)
-#     .input(label='Pick channel',element=multi_channels_select_input)
+S = (
+    slack_blocks()
+    .header("Hello, World!")
+    .divider()
+    # .section(text="Hello there, stranger", accessory=button_input)
+    # .section(text="Select pokemon", accessory=checkbox_input)
+    # .section(text="Date pick",accessory=date_input)
+    # .input(label="Email",element=email_input)
+    # .input(label="File",element=file_input, hint="Your selfie here")
+    # .input(label="height",element=number_input)
+    # .section(text="Travel Checklist",accessory=multi_static_select_input)
+    .input(label='Pick users',element=multi_users_select_input)
+    .input(label='Pick conversation',element=multi_conversations_select_input)
+    .input(label='Pick channel',element=multi_channels_select_input)
 
-#     # .section(text="Hi", accessory=image_element)
+    # .section(text="Hi", accessory=image_element)
     
-# )
+)
 
+print(S.to_string)

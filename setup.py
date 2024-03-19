@@ -7,6 +7,5 @@ setup(
     author='Jonathan Miura',
     author_email='jonathansm@gmail.com',
     packages=find_packages(),
-    install_requires=[],
-    
+    # install_requires=[],    
 )
